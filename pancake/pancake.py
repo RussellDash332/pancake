@@ -181,9 +181,8 @@ class Pancake:
                                         can_direct_swap = True
                                         break
                         # Greedy(?): get one correct only if two cannot do
-                        # Let's make it work on deluxe Waffle only for now
                         # TODO: check if there's a better strategy
-                        if self.size != 5 and not can_direct_swap:
+                        if not can_direct_swap:
                             for i in nongreens:
                                 if not can_direct_swap:
                                     for j in nongreens:

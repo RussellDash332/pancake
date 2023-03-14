@@ -77,7 +77,7 @@ def parse(soup):
             if 'yellow' in classes: v = 'Y'
             elif 'green' in classes: v = 'G'
             else: v = '-'
-            board[(x, y)], verdict[(x, y)] = div.text, v
+            board[(y, x)], verdict[(y, x)] = div.text, v
     size = max(board)[0] + 1
     new_board, new_verdict = [], []
     for i in range(size):
