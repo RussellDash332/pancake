@@ -1,7 +1,7 @@
 from collections import Counter
 
 class Wordle:
-    def __init__(self, wordlist='data/wordle.txt'):
+    def __init__(self, wordlist='../data/wordle.txt'):
         self.wv, self.wordlist = [], wordlist
 
     def add(self, word, verdict):

@@ -34,6 +34,7 @@ def start_browser(mode=None):
     browser.maximize_window()
     browser.set_page_load_timeout(30)
     try:
+        print('Getting HTML source page...')
         browser.get('https://wafflegame.net/')
         print('Closing how-to popup...')
         browser.find_element(By.XPATH, '/html/body/div[6]/div/header/button[2]').click()
@@ -92,7 +93,6 @@ def parse(soup):
 
 if __name__ == '__main__':
     if curr_os.startswith('Windows'):
-        print('Getting HTML source page...')
         try:
             soup = start_browser()
         except Exception as e:
