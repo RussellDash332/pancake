@@ -1,4 +1,3 @@
-from .wordle import Wordle
 from collections import Counter, deque
 from itertools import chain, combinations, product
 
@@ -166,6 +165,8 @@ class Pancake:
                     starting_path = []
 
                     can_direct_swap = True
+                    # Samuel-Russell greedy algorithm!
+                    # Credits to Samuel Murugasu for this ;)
                     while can_direct_swap:
                         can_direct_swap = False
                         # Greedy: get two corrects at a time
@@ -180,15 +181,19 @@ class Pancake:
                                         swaps_needed -= 1
                                         can_direct_swap = True
                                         break
-                        # Greedy(?): get one correct only if two cannot do
-                        # TODO: check if there's a better strategy
+                        # Greedy(?): get one correct only if two cannot do but it has to be on unique unsolved letter
+                        cnt = {}
+                        for i in range(self.n_letters):
+                            if src[i] == target[i]: continue
+                            elif src[i] not in cnt: cnt[src[i]] = 0
+                            cnt[src[i]] += 1
                         if not can_direct_swap:
                             for i in nongreens:
                                 if not can_direct_swap:
                                     for j in nongreens:
                                         if not can_direct_swap and i != j and \
                                         src[i] != target[i] and src[j] != target[j] and \
-                                        (src[i] == target[j] or src[j] == target[i]): # either same
+                                        src[i] == target[j] and cnt[src[i]] == 1:
                                             src[i], src[j] =  src[j], src[i]
                                             starting_path.append((i, j))
                                             swaps_needed -= 1
@@ -232,11 +237,14 @@ class Pancake:
                     print_path(possible_paths[0])
 
 class DeluxePancake(Pancake):
-    def __init__(self, board=None, verdict=None):
-        super().__init__(size=7, swaps=20, wordlist='data/deluxe.txt', board=board, verdict=verdict, name='deluxepancake')
+    def __init__(self, board=None, verdict=None, wordlist='data/deluxe.txt', name='deluxepancake'):
+        super().__init__(size=7, swaps=20, wordlist=wordlist, board=board, verdict=verdict, name=name)
 
 if __name__ == '__main__':
     # Do a test run
-    Pancake(board='vahmrocisiapanlarlery', verdict='gyy-gyy-g-g-y---g-y-g').solve()
-    DeluxePancake(board='riterrrotonthancuerwneicspineulelvrteepn', verdict='y-g-g-yy--ygyggg-g--y-g-gggygy-y--ygyg--').solve()
+    from wordle import Wordle
+    Pancake(board='hameleeuoamivtoolyetr', verdict='g--ggy--y-g--yy-g-yyg', wordlist='../data/wordle.txt').solve()
+    DeluxePancake(board='riterrrotonthancuerwneicspineulelvrteepn', verdict='y-g-g-yy--ygyggg-g--y-g-gggygy-y--ygyg--', wordlist='../data/deluxe.txt').solve()
     input('\nPress enter to quit...')
+else:
+    from .wordle import Wordle
