@@ -1,5 +1,6 @@
 from collections import Counter, deque
 from itertools import chain, combinations, product
+from heapq import heappop, heappush
 
 def power_set(iterable):
     s = list(iterable)
@@ -167,7 +168,7 @@ class Pancake:
                     can_direct_swap = True
                     # Samuel-Russell greedy algorithm!
                     # Credits to Samuel Murugasu for this ;)
-                    while can_direct_swap:
+                    while can_direct_swap and swaps_needed >= -5:
                         can_direct_swap = False
                         # Greedy: get two corrects at a time
                         for i in nongreens:
@@ -175,19 +176,19 @@ class Pancake:
                                 for j in nongreens:
                                     if not can_direct_swap and i != j and \
                                     src[i] != target[i] and src[j] != target[j] and \
-                                    src[i] == target[j] and src[j] == target[i]: # both same
-                                        src[i], src[j] =  src[j], src[i]
+                                    (src[i] == target[j] and src[j] == target[i]): # both same
+                                        src[i], src[j] = src[j], src[i]
                                         starting_path.append((i, j))
                                         swaps_needed -= 1
                                         can_direct_swap = True
                                         break
                         # Greedy(?): get one correct only if two cannot do but it has to be on unique unsolved letter
-                        cnt = {}
-                        for i in range(self.n_letters):
-                            if src[i] == target[i]: continue
-                            elif src[i] not in cnt: cnt[src[i]] = 0
-                            cnt[src[i]] += 1
                         if not can_direct_swap:
+                            cnt = {}
+                            for i in range(self.n_letters):
+                                if src[i] == target[i]: continue
+                                elif src[i] not in cnt: cnt[src[i]] = 0
+                                cnt[src[i]] += 1
                             for i in nongreens:
                                 if not can_direct_swap:
                                     for j in nongreens:
@@ -208,20 +209,28 @@ class Pancake:
                         print(f'Sub-optimal performance!{" (but it works...)" if swaps_needed >= -5 else ""}')
                         continue
 
-                    # Worst case, if greedy doesn't work, do BFS
+                    # Worst case, if greedy doesn't work, do A*
                     # But this is very very unlikely to be used
-                    print('Greedy algorithm does not work, suggesting BFS...')
+                    print('Greedy algorithm does not work, suggesting A*...')
                     src, target, starting_path = ''.join(src), list(target), tuple(starting_path)
+                    def heuristic(state, swaps):
+                        correct = 0
+                        yellow = 0
+                        for i in range(self.n_letters):
+                            if state[i] == target[i]: correct += 1
+                            else:
+                                for indices in self.horizontal_indices + self.vertical_indices:
+                                    yellow += (i in indices and state[i] in [target[j] for j in indices if state[j] != target[j]])
+                        return -(correct*self.n_letters**2 + yellow) # dumb heuristic function for now, TODO: improve :)
+
                     vis = {src}
-                    q = deque([(list(src), 0, ())])
-                    possible_paths = []
-                    curr_level = 0
+                    q = [(heuristic(src, 0), list(src), 0, ())]
                     while q:
-                        u, d, path = q.popleft()
-                        if curr_level != d:
-                            curr_level = d
-                            print(f'Traversing {d}/{swaps_needed}, number of states: {len(q)}...')
-                        if d == swaps_needed and u == target: possible_paths.append(starting_path+path)
+                        _, u, d, path = heappop(q)
+                        if u == target:
+                            if d == swaps_needed: print_path(starting_path+path)
+                            else: print(f'Are you sure this is the solution? I found one that solves in just {d+len(starting_path)} swaps!')
+                            break
                         else:
                             for i in nongreens:
                                 for j in nongreens:
@@ -230,11 +239,8 @@ class Pancake:
                                         u[i], u[j] =  u[j], u[i]
                                         check = ''.join(u)
                                         if check not in vis:
-                                            vis.add(check), q.append((u.copy(), d+1, path + ((i, j),)))
+                                            vis.add(check), heappush(q, (heuristic(u, d), u.copy(), d+1, path + ((i, j),)))
                                         u[i], u[j] =  u[j], u[i] # revert swap            
-                    if len(possible_paths) > 1: print(f'Found {len(possible_paths)} possible paths! Showing a sample path...')
-                    else: print()
-                    print_path(possible_paths[0])
 
 class DeluxePancake(Pancake):
     def __init__(self, board=None, verdict=None, wordlist='data/deluxe.txt', name='deluxepancake'):
