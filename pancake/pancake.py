@@ -100,6 +100,7 @@ class Pancake:
             print()
             print('Possible solution:')
             for i, (src, dest) in enumerate(path):
+                if src > dest: src, dest = dest, src
                 print(f'{i+1}. Swap ||{str(src).zfill(2)}|| and ||{str(dest).zfill(2)}||')
 
         assert self.bv, 'Please supply board and verdict accordingly'
