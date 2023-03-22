@@ -41,7 +41,14 @@ def start_browser(mode=None):
         print('Fake-solving to enable timezone change...')
         while int(browser.find_element(By.CLASS_NAME, 'swaps__val').text) > 0:
             elements = list(browser.find_elements(By.CLASS_NAME, 'draggable:not(.green)'))
-            ActionChains(browser).drag_and_drop(elements[0], elements[1]).perform()
+            src = elements[0]
+            dst = None
+            for i in range(1, len(elements)):
+                if src.text != elements[i].text:
+                    dst = elements[i]
+                    break
+            assert dst != None, 'electric boogaloo'
+            ActionChains(browser).drag_and_drop(src, dst).perform()
         print('Clicking menu button...')
         browser.find_element(By.CLASS_NAME, 'button--menu.icon-button').click()
 
