@@ -222,15 +222,15 @@ class Pancake:
                             else:
                                 for indices in self.horizontal_indices + self.vertical_indices:
                                     yellow += (i in indices and state[i] in [target[j] for j in indices if state[j] != target[j]])
-                        return -(correct*self.n_letters**2 + yellow) # dumb heuristic function for now, TODO: improve :)
+                        return -(correct*self.n_letters**2 + yellow*self.n_letters + swaps) # dumb heuristic function for now, TODO: improve :)
 
                     vis = {src}
                     q = [(heuristic(src, 0), list(src), 0, ())]
                     while q:
                         _, u, d, path = heappop(q)
                         if u == target:
-                            if d == swaps_needed: print_path(starting_path+path)
-                            else: print(f'Are you sure this is the solution? I found one that solves in just {d+len(starting_path)} swaps!')
+                            if d != swaps_needed: print(f'Are you sure this is the solution? I found one that solves in {d+len(starting_path)} swaps!')
+                            print_path(starting_path+path, swaps_left=5+swaps_needed-d)
                             break
                         else:
                             for i in nongreens:
