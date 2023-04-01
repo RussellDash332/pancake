@@ -1,6 +1,10 @@
 name: daily waffle
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - develop
+  schedule:
+    - cron: "*/2 * * * *"
 jobs:
   scrape:
     runs-on: ubuntu-latest
