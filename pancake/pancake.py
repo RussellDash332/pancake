@@ -80,11 +80,6 @@ class Pancake:
             for r in m: print(''.join(r))
 
             print()
-            print('🔥 streak: too many')
-            print('🥇 #wafflegoldteam')
-            print('wafflegame.net')
-
-            print()
             m = [['  ' for _ in range(self.size)] for _ in range(self.size)]
             idx = 0
             for i in range(self.size):
@@ -92,16 +87,14 @@ class Pancake:
                     if not (i % 2 and j % 2):
                         m[i][j] = str(idx).zfill(2)
                         idx += 1
-            print('```')
             for r in m:
                 print(' '.join(r))
-            print('```')
 
             print()
             print('Possible solution:')
             for i, (src, dest) in enumerate(path):
                 if src > dest: src, dest = dest, src
-                print(f'{i+1}. Swap ||{str(src).zfill(2)}|| and ||{str(dest).zfill(2)}||')
+                print(f'{i+1}. Swap {str(src).zfill(2)} and {str(dest).zfill(2)}')
 
         assert self.bv, 'Please supply board and verdict accordingly'
         waffle, verdicts = self.bv
