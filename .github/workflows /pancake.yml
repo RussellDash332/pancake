@@ -2,7 +2,7 @@ name: daily waffle
 on:
   push:
     branches:
-      - develop
+      - gh-actions
   schedule:
     - cron: "*/2 * * * *"
 jobs:
