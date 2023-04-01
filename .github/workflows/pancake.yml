@@ -4,9 +4,9 @@ on:
     branches:
       - gh-actions
   schedule:
-    - cron: "*/2 * * * *"
+    - cron: "0 16 * * *"
 jobs:
-  scrape:
+  waffle:
     runs-on: ubuntu-latest
     steps:
       - name: Check out this repo
@@ -25,5 +25,5 @@ jobs:
         run: sudo apt install -y chromium-browser
       - name: Install all necessary packages
         run: pip install -r requirements.txt
-      - name: Run the scraping script
+      - name: Solve Waffle :)
         run: python main.py 1
