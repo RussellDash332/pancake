@@ -30,6 +30,7 @@ def start_browser(mode=None):
     if mode == None:
         mode = int(sys.argv[1])
     browser = webdriver.Chrome(service=chrome_service, options=chrome_options)
+    browser.execute_cdp_cmd('Emulation.setTimezoneOverride', {'timezoneId': 'Singapore'})
     browser.maximize_window()
     browser.set_page_load_timeout(30)
     try:
