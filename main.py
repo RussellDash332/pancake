@@ -53,7 +53,7 @@ def download_chromedriver():
 
 def get_windows_browser():
     options = webdriver.ChromeOptions()
-    #options.add_argument('--headless')
+    options.add_argument('--headless') # to debug, comment this line
     options.add_experimental_option('excludeSwitches', ['enable-logging'])
     browser = webdriver.Chrome(options=options)
     return browser
@@ -82,32 +82,16 @@ def start_browser(mode, supplier):
     try:
         logging.info('Getting HTML source page...')
         browser.get('https://wafflegame.net/')
+        logging.info('Switching to local time...')
+        browser.execute_script('''localStorage.setItem('settings', '{"highcontrast":false,"darkmode":false,"localTimezoneEnabled":true}')''')
+        logging.info('Refreshing page...')
+        browser.refresh()
+        time.sleep(5)
         logging.info('Closing how-to popup...')
         browser.find_element(By.XPATH, '/html/body/div[6]/div/header/button[2]').click()
-
-        logging.info('Fake-solving to enable timezone change...')
-        while int(browser.find_element(By.CLASS_NAME, 'swaps__val').text) > 0:
-            elements = list(browser.find_elements(By.CLASS_NAME, 'draggable:not(.green)'))
-            src = elements[0]
-            dst = None
-            for i in range(1, len(elements)):
-                if src.text != elements[i].text:
-                    dst = elements[i]
-                    break
-            assert dst != None, 'electric boogaloo'
-            ActionChains(browser).drag_and_drop(src, dst).perform()
-        logging.info('Clicking menu button...')
-        browser.find_element(By.CLASS_NAME, 'button--menu.icon-button').click()
-        wait = WebDriverWait(browser, 5)
-        logging.info('Opening settings...')
-        wait.until(expected_conditions.element_to_be_clickable((By.CLASS_NAME, 'button--settings.icon-button'))).click()
-        logging.info('Switching to local time...')
-        wait.until(expected_conditions.element_to_be_clickable((By.CLASS_NAME, 'switch-tab:not(.switch-tab__selected)'))).click()
-        logging.info('Loading new Waffle...')
-        wait.until(expected_conditions.element_to_be_clickable((By.XPATH, '/html/body/div[7]/div/header/button[2]'))).click()
-
         if mode == 2:
-            time.sleep(5)
+            wait = WebDriverWait(browser, 5)
+            time.sleep(2)
             logging.info('Clicking menu button...')
             wait.until(expected_conditions.element_to_be_clickable((By.CLASS_NAME, 'button--menu.icon-button'))).click()
             logging.info('Opening Deluxe Waffle...')
@@ -156,3 +140,4 @@ if __name__ == '__main__':
     soup = loop_resolve(start_browser, handle_chromedriver, 5, mode, supplier)
     logging.info('Source page obtained! Parsing source page now...\n')
     parse(soup)
+    input('Press enter to quit...')
