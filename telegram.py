@@ -12,7 +12,7 @@ def send(token, chat_id, bot_message):
         'text': bot_message,
         'disable_web_page_preview': True
         })
-    logging.info(resp.json())
+    logging.info(resp.ok)
 
 curr_os = (pf:=platform.platform())[:pf.find('-')]
 supplier = {'Windows': get_windows_browser, 'Linux': get_linux_browser}.get(curr_os)

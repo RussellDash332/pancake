@@ -1,8 +1,6 @@
 name: daily waffle
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
   schedule:
     - cron: "55 15 * * *" # 4PM GMT - 5min
 jobs:
@@ -26,4 +24,4 @@ jobs:
       - name: Install all necessary packages
         run: pip install -r requirements.txt
       - name: Solve Waffle :)
-        run: python main.py 1
+        run: python telegram.py 1
