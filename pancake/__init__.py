@@ -1,1 +1,1 @@
-from .pancake import *
+from .solver import *

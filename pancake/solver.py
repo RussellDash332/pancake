@@ -1,4 +1,4 @@
-from collections import Counter, deque
+from collections import Counter
 from itertools import chain, combinations, product
 from heapq import heappop, heappush
 

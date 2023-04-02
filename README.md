@@ -2,13 +2,17 @@
 
 Known for somewhat solving [Wordle](https://www.nytimes.com/games/wordle/index.html) and [Waffle](https://wafflegame.net/).
 
-## Usage
-```sh
-pip install -r requirements.txt
-```
-If you're doing the regular Waffle on Windows, run `main.py` as is since this can be automated. Otherwise, do copy your whole HTML page source to `run.html`. You may repeat this process over and over.
+## Disclaimer
+Only Windows and Linux are supported as of now. Windows because I use it, Linux because GitHub Actions uses it. You can't fight me.
 
-Note that you can't `Ctrl+U` this thing, so here's how you can do it:
+## Usage
+1. Run `setup.py`.
+1. To solve the ongoing Waffle, run `main.py` as is since the whole process is automated.
+    - Use `python main.py 1` for daily Waffle and `python main.py 2` for deluxe Waffle.
+    - If the mode is not given, it will request for one, 1 or 2, depending on whether you want to solve the daily Waffle or deluxe Waffle.
+1. If you decide to not solve the ongoing Waffle, run `local_html.py` instead. For any number of times, copy your whole HTML page source to `run.html` and press Enter.
+
+Note that you can't get the HTML source page via `Ctrl+U`, so here's how you can do it:
 
 ![nice](images/copy.png)
 

@@ -1,20 +1,31 @@
-import os, platform, requests, time
+import logging
+import os
+import platform
+import requests
+import sys
+import time
 from bs4 import BeautifulSoup
-from zipfile import ZipFile
-from urllib.request import urlretrieve
+from pancake import Pancake, DeluxePancake
 from selenium import webdriver
 from selenium.webdriver import ActionChains
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.ui import WebDriverWait
-from pancake import Pancake, DeluxePancake
+from urllib.request import urlretrieve
+from webdriver_manager.chrome import ChromeDriverManager
+from webdriver_manager.core.utils import ChromeType
+from zipfile import ZipFile
 
-HTML_FN = 'run.html'
-
-version = requests.get('https://chromedriver.storage.googleapis.com/LATEST_RELEASE').text
-curr_os = platform.platform()
+def get_mode():
+    if len(sys.argv) == 1:  mode = int(input('Daily Waffle or Deluxe Waffle? (1 or 2)\n'))
+    else:                   mode = int(sys.argv[1])
+    assert mode in [1, 2], 'Invalid mode selected'
+    return mode
 
 def download_chromedriver():
+    version = requests.get('https://chromedriver.storage.googleapis.com/LATEST_RELEASE').text
     try: os.remove('chromedriver.zip')
     except: pass
     print('Downloading "chromedriver.exe"...')
@@ -24,13 +35,29 @@ def download_chromedriver():
         chromezip.extractall()
     os.remove('chromedriver.zip')
 
-def start_browser(mode=None):
-    if mode == None:
-        mode = int(input('Daily Waffle or Deluxe Waffle? (1 or 2)\n'))
-        assert mode in [1, 2], 'Invalid mode selected'
+def get_windows_browser():
     options = webdriver.ChromeOptions()
     options.add_experimental_option('excludeSwitches', ['enable-logging'])
     browser = webdriver.Chrome(options=options)
+    return browser
+
+def get_linux_browser():
+    chrome_service = Service(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install())
+    chrome_options = Options()
+    options = [
+        "--headless",
+        "--disable-gpu",
+        "--window-size=1920,1200",
+        "--ignore-certificate-errors",
+        "--disable-extensions",
+        "--no-sandbox",
+        "--disable-dev-shm-usage"
+    ]
+    for option in options: chrome_options.add_argument(option)
+    browser = webdriver.Chrome(service=chrome_service, options=chrome_options)
+    browser.execute_cdp_cmd('Emulation.setTimezoneOverride', {'timezoneId': 'Singapore'})
+
+def start_browser(mode, browser):
     browser.maximize_window()
     browser.set_page_load_timeout(30)
     try:
@@ -72,7 +99,6 @@ def start_browser(mode=None):
         return start_browser(mode)
     html_doc = browser.page_source
     browser.quit()
-    #open(HTML_FN, 'wb+').write(html_doc.encode())
     return BeautifulSoup(html_doc, 'html.parser')
 
 def parse(soup):
@@ -99,24 +125,17 @@ def parse(soup):
     else:           print(f'Ignoring invalid size of {size}...')
 
 if __name__ == '__main__':
-    if curr_os.startswith('Windows'):
-        try:
-            soup = start_browser()
-        except Exception as e:
-            print('Issue found:', e)
+    curr_os = (pf:=platform.platform())[:pf.find('-')]
+    supplier = {'Windows': get_windows_browser, 'Linux': get_linux_browser}.get(curr_os)
+    assert supplier, f'Pancake not supported for {curr_os} yet :('
+
+    mode = get_mode()
+    try:
+        soup = start_browser(mode, supplier())
+    except Exception as e:
+        print('Issue found:', e)
+        if curr_os == 'Windows':
             download_chromedriver()
-            soup = start_browser()
-        print('Done! Parsing source page now...\n')
-        parse(soup)
-        print()
-    while True:
-        try:
-            print(input(f'Paste the whole page source at {HTML_FN}, and press Enter when you\'re done:\n'))
-            with open(HTML_FN, 'rb') as f:
-                html_doc = ''.join(map(bytes.decode, f.readlines()))
-            parse(BeautifulSoup(html_doc, 'html.parser'))
-            print()
-        except KeyboardInterrupt: break
-        except Exception as e:
-            print('HTML page source cannot be parsed :( Skipping!')
-            print('Issue:', e)
+        soup = start_browser(mode, supplier())
+    print('Done! Parsing source page now...\n')
+    parse(soup)
