@@ -2,7 +2,7 @@
 from main import *
 
 Pancake.IS_TELEGRAM = True
-try:    TOKEN, CHATS = os.environ['TOKEN'], os.environ['CHAT'].split(',')
+try:    TOKEN, CHATS = os.environ['TOKEN'], os.environ['CHATS']
 except: from env import TOKEN, CHATS
 
 def send(token, chat_id, bot_message):
