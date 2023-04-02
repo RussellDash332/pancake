@@ -30,7 +30,9 @@ It's amazing how this can be wrapped in a Telegram bot. You have two options:
     CHATS = '123456,-987654,42069'
     ```
 
-1. Use GitHub secrets and put `TOKEN` and `CHATS` accordingly without the quotation marks.
+1. Use GitHub repository secrets and put `TOKEN` and `CHATS` accordingly without the quotation marks. See the image below.
+
+![secret](images/secret.png)
 
 ## Contributing
 

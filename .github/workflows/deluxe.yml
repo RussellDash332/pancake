@@ -7,21 +7,21 @@ jobs:
   waffle:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out this repo
+      - name: Checkout repo
         uses: actions/checkout@v2
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
           python-version: '3.10'
-      - name: Installed package list
-        run: apt list --installed
-      - name: Remove Chrome
-        run: sudo apt purge google-chrome-stable
-      - name: Remove default Chromium
-        run: sudo apt purge chromium-browser
-      - name: Install a new Chromium
-        run: sudo apt install -y chromium-browser
-      - name: Install all necessary packages
-        run: pip install -r requirements.txt
-      - name: Solve Deluxe Waffle :)
+      - name: Chrome setup matters
+        run: |-
+          apt list --installed
+          sudo apt purge google-chrome-stable
+          sudo apt purge chromium-browser
+          sudo apt install -y chromium-browser
+          pip install -r requirements.txt
+      - name: Solve deluxe Waffle :)
         run: python telegram.py 2
+        env:
+          TOKEN: ${{ secrets.TOKEN }}
+          CHATS: ${{ secrets.CHATS }}
