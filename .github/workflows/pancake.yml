@@ -24,6 +24,6 @@ jobs:
       - name: Install a new Chromium
         run: sudo apt install -y chromium-browser
       - name: Install all necessary packages
-        run: pip install -r setup/requirements.txt
+        run: pip install -r requirements.txt
       - name: Solve Waffle :)
         run: python main.py 1

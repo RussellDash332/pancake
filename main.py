@@ -18,17 +18,33 @@ from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.core.utils import ChromeType
 from zipfile import ZipFile
 
+logging.basicConfig(
+    level=logging.INFO, 
+    format= '[%(asctime)s] %(levelname)s - %(message)s',
+    datefmt='%H:%M:%S'
+)
+
 def get_mode():
     if len(sys.argv) == 1:  mode = int(input('Daily Waffle or Deluxe Waffle? (1 or 2)\n'))
     else:                   mode = int(sys.argv[1])
     assert mode in [1, 2], 'Invalid mode selected'
     return mode
 
+def loop_resolve(f, resolution, lim, *args):
+    if lim == 0:
+        raise Exception('Reached the limit for number of tries')
+    try:
+        return f(*args)
+    except Exception as e:
+        print('Issue found:', e)
+        resolution()
+        return loop_resolve(f, resolution, lim-1, *args)
+
 def download_chromedriver():
     version = requests.get('https://chromedriver.storage.googleapis.com/LATEST_RELEASE').text
     try: os.remove('chromedriver.zip')
     except: pass
-    print('Downloading "chromedriver.exe"...')
+    logging.info('Downloading "chromedriver.exe"...')
     url = f'https://chromedriver.storage.googleapis.com/{version}/chromedriver_win32.zip'
     urlretrieve(url, 'chromedriver.zip')
     with ZipFile('chromedriver.zip') as chromezip:
@@ -56,16 +72,19 @@ def get_linux_browser():
     for option in options: chrome_options.add_argument(option)
     browser = webdriver.Chrome(service=chrome_service, options=chrome_options)
     browser.execute_cdp_cmd('Emulation.setTimezoneOverride', {'timezoneId': 'Singapore'})
+    return browser
 
-def start_browser(mode, browser):
+def start_browser(mode, supplier):
+    browser = supplier()
     browser.maximize_window()
     browser.set_page_load_timeout(30)
     try:
-        print('Getting HTML source page...')
+        logging.info('Getting HTML source page...')
         browser.get('https://wafflegame.net/')
-        print('Closing how-to popup...')
+        logging.info('Closing how-to popup...')
         browser.find_element(By.XPATH, '/html/body/div[6]/div/header/button[2]').click()
-        print('Fake-solving to enable timezone change...')
+
+        logging.info('Fake-solving to enable timezone change...')
         while int(browser.find_element(By.CLASS_NAME, 'swaps__val').text) > 0:
             elements = list(browser.find_elements(By.CLASS_NAME, 'draggable:not(.green)'))
             src = elements[0]
@@ -76,22 +95,21 @@ def start_browser(mode, browser):
                     break
             assert dst != None, 'electric boogaloo'
             ActionChains(browser).drag_and_drop(src, dst).perform()
-        print('Clicking menu button...')
+        logging.info('Clicking menu button...')
         browser.find_element(By.CLASS_NAME, 'button--menu.icon-button').click()
-
         wait = WebDriverWait(browser, 5)
-        print('Opening settings...')
+        logging.info('Opening settings...')
         wait.until(expected_conditions.element_to_be_clickable((By.CLASS_NAME, 'button--settings.icon-button'))).click()
-        print('Switching to local time...')
+        logging.info('Switching to local time...')
         wait.until(expected_conditions.element_to_be_clickable((By.CLASS_NAME, 'switch-tab:not(.switch-tab__selected)'))).click()
-        print('Loading new Waffle...')
+        logging.info('Loading new Waffle...')
         wait.until(expected_conditions.element_to_be_clickable((By.XPATH, '/html/body/div[7]/div/header/button[2]'))).click()
 
         if mode == 2:
             time.sleep(5)
-            print('Clicking menu button...')
+            logging.info('Clicking menu button...')
             wait.until(expected_conditions.element_to_be_clickable((By.CLASS_NAME, 'button--menu.icon-button'))).click()
-            print('Opening Deluxe Waffle...')
+            logging.info('Opening Deluxe Waffle...')
             wait.until(expected_conditions.element_to_be_clickable((By.CLASS_NAME, 'button--deluxe.icon-button'))).click()
         time.sleep(5)
     except:
@@ -124,18 +142,15 @@ def parse(soup):
     elif size == 7: DeluxePancake(board=new_board, verdict=new_verdict).solve()
     else:           print(f'Ignoring invalid size of {size}...')
 
+def handle_chromedriver():
+    if curr_os == 'Windows': download_chromedriver()
+
 if __name__ == '__main__':
     curr_os = (pf:=platform.platform())[:pf.find('-')]
     supplier = {'Windows': get_windows_browser, 'Linux': get_linux_browser}.get(curr_os)
     assert supplier, f'Pancake not supported for {curr_os} yet :('
 
     mode = get_mode()
-    try:
-        soup = start_browser(mode, supplier())
-    except Exception as e:
-        print('Issue found:', e)
-        if curr_os == 'Windows':
-            download_chromedriver()
-        soup = start_browser(mode, supplier())
-    print('Done! Parsing source page now...\n')
+    soup = loop_resolve(start_browser, handle_chromedriver, 5, mode, supplier)
+    logging.info('Source page obtained! Parsing source page now...\n')
     parse(soup)

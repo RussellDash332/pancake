@@ -3,7 +3,7 @@
 Known for somewhat solving [Wordle](https://www.nytimes.com/games/wordle/index.html) and [Waffle](https://wafflegame.net/).
 
 ## Disclaimer
-Only Windows and Linux are supported as of now. Windows because I use it, Linux because GitHub Actions uses it. You can't fight me.
+Only Windows and Linux are supported as of now. Windows because I use it, Linux because GitHub Actions uses it (**but not my Ubuntu terminal somehow**). You can't fight me.
 
 ## Usage
 1. Run `setup.py`.
