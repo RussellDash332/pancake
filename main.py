@@ -53,6 +53,7 @@ def download_chromedriver():
 
 def get_windows_browser():
     options = webdriver.ChromeOptions()
+    #options.add_argument('--headless')
     options.add_experimental_option('excludeSwitches', ['enable-logging'])
     browser = webdriver.Chrome(options=options)
     return browser
@@ -138,11 +139,12 @@ def parse(soup):
                 new_board.append(board[(i, j)].lower())
                 new_verdict.append(verdict[(i, j)].upper())
     new_board, new_verdict = map(''.join, [new_board, new_verdict])
-    if size == 5:   Pancake(board=new_board, verdict=new_verdict).solve()
-    elif size == 7: DeluxePancake(board=new_board, verdict=new_verdict).solve()
+    if size == 5:   return Pancake(board=new_board, verdict=new_verdict).solve()
+    elif size == 7: return DeluxePancake(board=new_board, verdict=new_verdict).solve()
     else:           print(f'Ignoring invalid size of {size}...')
 
 def handle_chromedriver():
+    curr_os = (pf:=platform.platform())[:pf.find('-')]
     if curr_os == 'Windows': download_chromedriver()
 
 if __name__ == '__main__':

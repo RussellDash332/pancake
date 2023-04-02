@@ -7,6 +7,8 @@ def power_set(iterable):
     return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))
 
 class Pancake:
+    IS_TELEGRAM = False
+
     def __init__(self, size=5, swaps=10, wordlist='data/wordle.txt', board=None, verdict=None, name='pancake'):
         assert size % 2, 'Board size must be odd'
         self.size, self.swaps, self.wordlist, self.name = size, swaps, wordlist, name
@@ -33,6 +35,8 @@ class Pancake:
         self.bv = (board, verdict)
 
     def solve(self):
+        ret = []
+
         def solve_single(wv):
             w, v = wv
             tmp = Wordle(self.wordlist).add(w, v).solve()
@@ -60,9 +64,15 @@ class Pancake:
             return m
         
         def print_path(path, swaps_left=5):
-            print(f'#{self.name} {swaps_left if swaps_left >= 0 else "X"}/5')
+            ret = []
+
+            def print_special(s=''):
+                print(s.replace('```', '').replace('||', ''))
+                if self.IS_TELEGRAM: ret.append(s.replace('#', '\\#').replace('.', '\\.'))
+
+            print_special(f'#{self.name} {swaps_left if swaps_left >= 0 else "X"}/5')
             
-            print()
+            print_special()
             m = [['⬜️' for _ in range(self.size)] for _ in range(self.size)]
             for i in range(self.size):
                 for j in range(self.size):
@@ -77,9 +87,15 @@ class Pancake:
             }
             for i, j in pos.get(swaps_left, []):
                 m[i][j] = '⭐️'
-            for r in m: print(''.join(r))
+            for r in m: print_special(''.join(r))
 
-            print()
+            print_special()
+            print_special('🔥 streak: too many')
+            print_special('😇 #wafflegod')
+            print_special('wafflegame.net')
+
+            print_special()
+            print_special('```')
             m = [['  ' for _ in range(self.size)] for _ in range(self.size)]
             idx = 0
             for i in range(self.size):
@@ -88,13 +104,15 @@ class Pancake:
                         m[i][j] = str(idx).zfill(2)
                         idx += 1
             for r in m:
-                print(' '.join(r))
+                print_special(' '.join(r))
 
-            print()
-            print('Possible solution:')
+            print_special('```')
+            print_special('Possible solution:')
             for i, (src, dest) in enumerate(path):
                 if src > dest: src, dest = dest, src
-                print(f'{i+1}. Swap {str(src).zfill(2)} and {str(dest).zfill(2)}')
+                print_special(f'{i+1}. Swap ||{str(src).zfill(2)}|| and ||{str(dest).zfill(2)}||')
+
+            return '\n'.join(ret)
 
         assert self.bv, 'Please supply board and verdict accordingly'
         waffle, verdicts = self.bv
@@ -196,16 +214,15 @@ class Pancake:
                                             break
 
                     if swaps_needed == 0:
-                        print_path(starting_path)
+                        ret.append(print_path(starting_path))
                         continue
                     elif swaps_needed < 0:
-                        print_path(starting_path, 5+swaps_needed)
+                        ret.append(print_path(starting_path, 5+swaps_needed))
                         print(f'Sub-optimal performance!{" (but it works...)" if swaps_needed >= -5 else ""}')
                         continue
 
                     # Worst case, if greedy doesn't work, do A*
                     # But this is very very unlikely to be used
-                    print('Greedy algorithm does not work, suggesting A*...')
                     src, target, starting_path = ''.join(src), list(target), tuple(starting_path)
                     def heuristic(state, swaps):
                         correct = 0
@@ -223,7 +240,7 @@ class Pancake:
                         _, u, d, path = heappop(q)
                         if u == target:
                             if d != swaps_needed: print(f'Are you sure this is the solution? I found one that solves in {d+len(starting_path)} swaps!')
-                            print_path(starting_path+path, swaps_left=5+swaps_needed-d)
+                            ret.append(print_path(starting_path+path, swaps_left=5+swaps_needed-d))
                             break
                         else:
                             for i in nongreens:
@@ -234,7 +251,9 @@ class Pancake:
                                         check = ''.join(u)
                                         if check not in vis:
                                             vis.add(check), heappush(q, (heuristic(u, d), u.copy(), d+1, path + ((i, j),)))
-                                        u[i], u[j] =  u[j], u[i] # revert swap            
+                                        u[i], u[j] =  u[j], u[i] # revert swap
+
+        return '\n'.join(ret)
 
 class DeluxePancake(Pancake):
     def __init__(self, board=None, verdict=None, wordlist='data/deluxe.txt', name='deluxepancake'):
