@@ -105,8 +105,8 @@ if __name__ == '__main__':
     while True:
         try:
             print(input(f'Paste the whole page source at {HTML_FN}, and press Enter when you\'re done:\n'))
-            with open(HTML_FN, 'r') as f:
-                html_doc = ''.join(f.readlines())
+            with open(HTML_FN, 'rb') as f:
+                html_doc = ''.join(map(bytes.decode, f.readlines()))
             parse(BeautifulSoup(html_doc, 'html.parser'))
             print()
         except KeyboardInterrupt: break
