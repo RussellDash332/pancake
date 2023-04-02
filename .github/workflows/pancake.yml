@@ -2,9 +2,9 @@ name: daily waffle
 on:
   push:
     branches:
-      - gh-actions
+      - main
   schedule:
-    - cron: "0 16 * * *"
+    - cron: "0 16 * * *" # 4PM GMT
 jobs:
   waffle:
     runs-on: ubuntu-latest
@@ -26,4 +26,4 @@ jobs:
       - name: Install all necessary packages
         run: pip install -r requirements.txt
       - name: Solve Waffle :)
-        run: python main.py 1
+        run: python main_gh.py 1
