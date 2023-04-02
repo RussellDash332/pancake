@@ -114,7 +114,7 @@ def start_browser(mode, supplier):
         time.sleep(5)
     except:
         browser.quit()
-        return start_browser(mode)
+        return start_browser(mode, supplier)
     html_doc = browser.page_source
     browser.quit()
     return BeautifulSoup(html_doc, 'html.parser')
