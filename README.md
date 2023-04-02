@@ -20,6 +20,18 @@ Note that you can't get the HTML source page via `Ctrl+U`, so here's how you can
 
 I only learnt CS2040 and CS3243, so those are where this can go as far as.
 
+## Telebot integration
+
+It's amazing how this can be wrapped in a Telegram bot. You have two options:
+1. Create `env.py` and put `TOKEN` and `CHATS` as the bot token and the comma-separated chat IDs, respectively. For example:
+
+    ```py
+    TOKEN = 'abcDEF123789'
+    CHATS = '123456,-987654,42069'
+    ```
+
+1. Use GitHub secrets and put `TOKEN` and `CHATS` accordingly without the quotation marks.
+
 ## Contributing
 
 asdf
