@@ -112,7 +112,7 @@ class Pancake:
                 if src > dest: src, dest = dest, src
                 print_special(f'{i+1}. Swap ||{str(src).zfill(2)}|| and ||{str(dest).zfill(2)}||')
 
-            return '\n'.join(ret)
+            return '\n'.join(ret)+'\n'
 
         assert self.bv, 'Please supply board and verdict accordingly'
         waffle, verdicts = self.bv
@@ -240,7 +240,8 @@ class Pancake:
                         _, u, d, path = heappop(q)
                         if u == target:
                             if d != swaps_needed: print(f'Are you sure this is the solution? I found one that solves in {d+len(starting_path)} swaps!')
-                            ret.append(print_path(starting_path+path, swaps_left=5+swaps_needed-d))
+                            _ = print_path(starting_path+path, swaps_left=5+swaps_needed-d)
+                            if d == swaps_needed: ret.append(_)
                             break
                         else:
                             for i in nongreens:
