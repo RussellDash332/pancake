@@ -2,7 +2,7 @@ name: deluxe waffle
 on:
   workflow_dispatch:
   schedule:
-    - cron: "55 15 * * 0" # 4PM GMT Sunday - 5min
+    - cron: "0 16 * * 0" # 4PM GMT Sunday
 jobs:
   waffle:
     runs-on: ubuntu-latest
