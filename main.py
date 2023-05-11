@@ -81,21 +81,11 @@ def start_browser(mode, supplier):
     browser.set_page_load_timeout(30)
     try:
         logging.info('Getting HTML source page...')
-        browser.get('https://wafflegame.net/')
+        browser.get('https://wafflegame.net/' + ['daily', 'deluxe'][mode-1])
         logging.info('Switching to local time...')
         browser.execute_script('''localStorage.setItem('settings', '{"highcontrast":false,"darkmode":false,"localTimezoneEnabled":true}')''')
         logging.info('Refreshing page...')
         browser.refresh()
-        time.sleep(5)
-        logging.info('Closing how-to popup...')
-        browser.find_element(By.XPATH, '/html/body/div[6]/div/header/button[2]').click()
-        if mode == 2:
-            wait = WebDriverWait(browser, 5)
-            time.sleep(2)
-            logging.info('Clicking menu button...')
-            wait.until(expected_conditions.element_to_be_clickable((By.CLASS_NAME, 'button--menu.icon-button'))).click()
-            logging.info('Opening Deluxe Waffle...')
-            wait.until(expected_conditions.element_to_be_clickable((By.CLASS_NAME, 'button--deluxe.icon-button'))).click()
         time.sleep(5)
     except:
         browser.quit()
