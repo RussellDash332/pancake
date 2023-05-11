@@ -236,13 +236,13 @@ class Pancake:
 
                     vis = {src}
                     q = [(heuristic(src, 0), list(src), 0, ())]
+                    best = (None, -1e9)
                     while q:
                         _, u, d, path = heappop(q)
                         if u == target:
                             if d != swaps_needed: print(f'Are you sure this is the solution? I found one that solves in {d+len(starting_path)} swaps!')
-                            _ = print_path(starting_path+path, swaps_left=5+swaps_needed-d)
-                            if d == swaps_needed: ret.append(_)
-                            break
+                            best = min([best, (print_path(starting_path+path, swaps_left=5+swaps_needed-d), 5+swaps_needed-d)], key=lambda x: (abs(x[1]-5), x[1]))
+                            if best[1] == 5: break
                         else:
                             for i in nongreens:
                                 for j in nongreens:
@@ -253,7 +253,7 @@ class Pancake:
                                         if check not in vis:
                                             vis.add(check), heappush(q, (heuristic(u, d), u.copy(), d+1, path + ((i, j),)))
                                         u[i], u[j] =  u[j], u[i] # revert swap
-
+                    if best[0]: ret.append(best[0])
         return '\n'.join(ret)
 
 class DeluxePancake(Pancake):
