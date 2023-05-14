@@ -254,7 +254,7 @@ class Pancake:
                                         if check not in vis:
                                             vis.add(check), heappush(q, (heuristic(u, d), u.copy(), d+1, path + ((i, j),)))
                                         u[i], u[j] =  u[j], u[i] # revert swap
-            if best[0]: ret.append(best[0])
+        if best[0]: ret.append(best[0])
         return '\n'.join(ret)
 
 class DeluxePancake(Pancake):
