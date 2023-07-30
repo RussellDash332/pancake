@@ -7,12 +7,8 @@ import time
 from bs4 import BeautifulSoup
 from pancake import Pancake, DeluxePancake
 from selenium import webdriver
-from selenium.webdriver import ActionChains
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions
-from selenium.webdriver.support.ui import WebDriverWait
 from urllib.request import urlretrieve
 from webdriver_manager.chrome import ChromeDriverManager
 from zipfile import ZipFile
@@ -58,7 +54,7 @@ def get_windows_browser():
     return browser
 
 def get_linux_browser():
-    chrome_service = Service(ChromeDriverManager(chrome_type='chromium').install())
+    chrome_service = Service(ChromeDriverManager(chrome_type='chromium', driver_version=requests.get('https://chromedriver.storage.googleapis.com/LATEST_RELEASE').text).install())
     chrome_options = Options()
     options = [
         "--headless",
