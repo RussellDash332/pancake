@@ -15,7 +15,6 @@ from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.ui import WebDriverWait
 from urllib.request import urlretrieve
 from webdriver_manager.chrome import ChromeDriverManager
-from webdriver_manager.core.utils import ChromeType
 from zipfile import ZipFile
 
 logging.basicConfig(
@@ -59,7 +58,7 @@ def get_windows_browser():
     return browser
 
 def get_linux_browser():
-    chrome_service = Service(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install())
+    chrome_service = Service(ChromeDriverManager(chrome_type='chromium').install())
     chrome_options = Options()
     options = [
         "--headless",
