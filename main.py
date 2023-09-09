@@ -19,6 +19,8 @@ logging.basicConfig(
     datefmt='%H:%M:%S'
 )
 
+__VERSION__ = '116.0.5845'
+
 def get_mode():
     if len(sys.argv) == 1:  mode = int(input('Daily Waffle or Deluxe Waffle? (1 or 2)\n'))
     else:                   mode = int(sys.argv[1])
@@ -36,7 +38,7 @@ def loop_resolve(f, resolution, lim, *args):
         return loop_resolve(f, resolution, lim-1, *args)
 
 def download_chromedriver():
-    version = requests.get('https://chromedriver.storage.googleapis.com/LATEST_RELEASE').text
+    version = __VERSION__ #requests.get('https://chromedriver.storage.googleapis.com/LATEST_RELEASE').text
     try: os.remove('chromedriver.zip')
     except: pass
     logging.info('Downloading "chromedriver.exe"...')
@@ -54,7 +56,8 @@ def get_windows_browser():
     return browser
 
 def get_linux_browser():
-    chrome_service = Service(ChromeDriverManager(chrome_type='chromium', driver_version=requests.get('https://chromedriver.storage.googleapis.com/LATEST_RELEASE').text).install())
+    version = __VERSION__ #requests.get('https://chromedriver.storage.googleapis.com/LATEST_RELEASE').text
+    chrome_service = Service(ChromeDriverManager(chrome_type='chromium', driver_version=version).install())
     chrome_options = Options()
     options = [
         "--headless",
