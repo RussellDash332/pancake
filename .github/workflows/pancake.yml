@@ -18,7 +18,7 @@ jobs:
           apt list --installed
           sudo apt purge google-chrome-stable
           sudo apt purge chromium-browser
-          sudo apt install -y chromium-browser
+          sudo apt install -y chromium-browser=117.0.5938.92
           pip install -r requirements.txt
       - name: Solve daily Waffle :)
         run: python telegram.py 1
