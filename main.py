@@ -19,7 +19,8 @@ logging.basicConfig(
     datefmt='%H:%M:%S'
 )
 
-__VERSION__ = '116.0.5845'
+with open('version.txt', 'r') as f:
+    __VERSION__ = f.readline().split()[1]
 
 def get_mode():
     if len(sys.argv) == 1:  mode = int(input('Daily Waffle or Deluxe Waffle? (1 or 2)\n'))
