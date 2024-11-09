@@ -14,9 +14,5 @@ def send(token, chat_id, bot_message):
         })
     logging.info(resp.ok)
 
-curr_os = (pf:=platform.platform())[:pf.find('-')]
-supplier = {'Windows': get_windows_browser, 'Linux': get_linux_browser}.get(curr_os)
-assert supplier, f'Pancake not supported for {curr_os} yet :('
-
-bot_message = parse(loop_resolve(start_browser, handle_chromedriver, 5, get_mode(), supplier))
+bot_message = run()
 for chat_id in CHATS.split(','): send(TOKEN, chat_id, bot_message)
