@@ -255,7 +255,7 @@ class Pancake:
                                             vis.add(check), heappush(q, (heuristic(u, d), u.copy(), d+1, path + ((i, j),)))
                                         u[i], u[j] =  u[j], u[i] # revert swap
         if best[0]: ret.append(best[0])
-        return '\n'.join(ret)
+        return '\n'.join(sorted(ret)[-1:])
 
 class DeluxePancake(Pancake):
     def __init__(self, board=None, verdict=None, wordlist='data/deluxe.txt', name='deluxepancake'):
