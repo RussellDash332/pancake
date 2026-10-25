@@ -2,7 +2,7 @@ name: daily waffle
 on:
   workflow_dispatch:
   schedule:
-    - cron: "45 15 * * *" # 4PM GMT - 15min
+    - cron: "0 12 * * *" # 8:00 PM SGT, 4 hours before midnight
 jobs:
   waffle:
     runs-on: ubuntu-latest
